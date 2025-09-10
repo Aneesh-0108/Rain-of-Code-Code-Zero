@@ -208,7 +208,11 @@ __marimo__/
 
 
 #Firebase key
+<<<<<<< HEAD
 campus-connect-firebase-admin.json 
 
 
 Rain-of-Code-Code-Zero/
+=======
+campus-connect-firebase-admin.json 
+>>>>>>> 2a3191c (Initial commit: setup backend)
