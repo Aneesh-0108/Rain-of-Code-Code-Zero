@@ -1,0 +1,1 @@
+A centralized web platform for SJEC students to view, subscribe to, and get reminders for club events. Built with HTML, CSS, JS frontend, Flask REST API backend, and Firebase for authentication & data storage to ensure seamless event management and notifications.
