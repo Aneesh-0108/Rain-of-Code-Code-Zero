@@ -4,6 +4,10 @@ from src.errors import register_error_handlers, APIError
 from src.decorators import require_auth, require_role
 from src.services import events_service, registration_service
 
+
+
+COL_EVENTS = "events"
+
 def create_app():
     app = Flask(__name__)
     app.config["SECRET_KEY"] = settings.SECRET_KEY
@@ -36,6 +40,15 @@ def create_app():
     def cancel_registration(user, event_id):
         registration_service.cancel_registration(event_id, user["uid"])
         return jsonify({"status": "canceled"})
+    
+
+    @app.post("/api/events/<event_id>/approve")
+    @require_auth
+    @require_role("admin")
+    def approve_event(user, event_id):
+        events_service.approve_event(event_id)
+        return jsonify({"status": "approved"})
+
 
     @app.get("/api/me")
     @require_auth

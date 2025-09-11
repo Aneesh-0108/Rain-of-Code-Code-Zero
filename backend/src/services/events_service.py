@@ -41,3 +41,14 @@ def create_event(data, user_uid: str):
 def list_approved_events():
     q = db.collection(COL_EVENTS).where("status", "==", "approved").order_by("startTime")
     return [s.to_dict() | {"id": s.id} for s in q.stream()]
+
+
+# Add at bottom
+def approve_event(event_id):
+    ref = db.collection(COL_EVENTS).document(event_id)
+    snap = ref.get()
+    if not snap.exists:
+        raise APIError("Event not found", 404, "not_found")
+    data = snap.to_dict()
+    if data.get("status") != "approved":
+        ref.update({"status": "approved"})
