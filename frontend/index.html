@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Event Platform</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="./style.css" />
+    <!-- Firebase (modular) via CDN -->
+    <script type="module">
+        // Preload Firebase modules (optional)
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    </script>
+</head>
+
+<body>
+    <header class="app-header">
+        <div class="logo">Event Platform</div>
+        <nav class="nav-actions">
+            <button id="loginBtn" class="btn primary">Login</button>
+            <button id="logoutBtn" class="btn" style="display:none;">Logout</button>
+        </nav>
+    </header>
+
+    <main class="container">
+        <section id="userInfo" class="panel hidden"></section>
+
+        <section id="createSection" class="panel hidden">
+            <h2>Create Event</h2>
+            <form id="createForm">
+                <div class="field">
+                    <label>Title</label>
+                    <input name="title" required />
+                </div>
+                <div class="field">
+                    <label>Start Time</label>
+                    <input name="startTime" type="datetime-local" required />
+                </div>
+                <div class="field">
+                    <label>End Time</label>
+                    <input name="endTime" type="datetime-local" required />
+                </div>
+                <div class="field">
+                    <label>Capacity</label>
+                    <input name="capacity" type="number" min="1" value="30" required />
+                </div>
+                <div class="field">
+                    <label>Description</label>
+                    <textarea name="description" rows="2"></textarea>
+                </div>
+                <div class="actions">
+                    <button type="submit" class="btn primary">Save</button>
+                    <button type="button" id="cancelCreate" class="btn">Cancel</button>
+                </div>
+                <div class="error-msg" id="createError" style="display:none;"></div>
+            </form>
+        </section>
+
+        <section class="panel">
+            <div class="panel-header">
+                <h2>Events</h2>
+                <div class="ics-links">
+                    <a id="allIcsLink" href="#" class="link">All Events (.ics)</a>
+                </div>
+            </div>
+            <div id="eventsLoading">Loading events...</div>
+            <ul id="eventsList" class="events"></ul>
+            <div id="eventsEmpty" class="empty hidden">No approved events yet.</div>
+        </section>
+
+        <section id="pendingSection" class="panel hidden">
+            <h2>Pending Events (Admin)</h2>
+            <ul id="pendingList" class="events"></ul>
+            <div id="pendingEmpty" class="empty hidden">No pending events.</div>
+        </section>
+
+        <div id="toast" class="toast hidden"></div>
+    </main>
+
+    <footer class="footer">
+        <small>Hackathon Event Platform &copy; 2025</small>
+    </footer>
+
+    <script type="module" src="./config.js"></script>
+    <script type="module" src="./js/app.js"></script>
+</body>
+
+</html>
