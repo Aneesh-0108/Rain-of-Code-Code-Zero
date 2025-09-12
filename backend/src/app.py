@@ -3,6 +3,8 @@ from src.config import settings
 from src.errors import register_error_handlers, APIError
 from src.decorators import require_auth, require_role
 from src.services import events_service, registration_service
+from flask import Response
+from src.utils.ics import build_calendar
 
 
 
@@ -58,6 +60,34 @@ def create_app():
             "email": user.get("email"),
             "roles": user.get("roles", [])
         })
+
+
+
+    @app.get("/api/events.ics")
+    def events_ics():
+        # We can only export approved events
+        events = events_service.list_approved_events()
+        data = build_calendar(events)
+        return Response(data, mimetype="text/calendar; charset=utf-8")
+
+    @app.get("/api/events/<event_id>.ics")
+    def event_ics(event_id):
+        # fetch single event
+        # (Reuse existing retrieval)
+        all_e = events_service.list_approved_events()
+        match = next((e for e in all_e if e["id"] == event_id), None)
+        if not match:
+            return Response("Event not found", status=404)
+        from src.utils.ics import build_calendar
+        data = build_calendar([match])
+        return Response(data, mimetype="text/calendar; charset=utf-8")
+    
+
+
+    @app.get("/debug/events")
+    def debug_events():
+        events = events_service.list_approved_events()
+        return jsonify([e["id"] for e in events])
 
     return app
 
