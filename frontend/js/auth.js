@@ -12,6 +12,7 @@ let currentUser = null;
 let currentToken = null;
 
 export async function login() {
+    console.log("Starting login...");
     await signInWithPopup(auth, provider);
     // token will refresh via listener below
 }
@@ -24,6 +25,9 @@ export function onUserChanged(callback) {
     onAuthStateChanged(auth, async (user) => {
         currentUser = user;
         currentToken = user ? await user.getIdToken() : null;
+
+        console.log("User changed:", user);
+        console.log("Token:", currentToken);
         callback(user, currentToken);
     });
 }

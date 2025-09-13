@@ -11,6 +11,7 @@ const cancelCreate = document.getElementById("cancelCreate");
 const createError = document.getElementById("createError");
 
 loginBtn.onclick = async () => {
+    console.log("Login button clicked")
     loginBtn.disabled = true;
     try { await login(); } catch (e) { showToast("Login failed: " + e.message, true); }
     finally { loginBtn.disabled = false; }
