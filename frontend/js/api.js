@@ -6,6 +6,7 @@ async function request(path, { method = "GET", body = null, auth = false } = {})
     if (body) headers["Content-Type"] = "application/json";
     if (auth) {
         const token = await getToken();
+        console.log("Firebase ID Token:", token);
         if (token) headers["Authorization"] = "Bearer " + token;
     }
     const res = await fetch(CONFIG.API_BASE + path, {

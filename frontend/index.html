@@ -79,11 +79,104 @@
     </main>
 
     <footer class="footer">
-        <small>Hackathon Event Platform &copy; 2025</small>
+        <small>Campus Connect Platform &copy; 2025</small>
     </footer>
+    <script type="module">
+        import { login, logout, onUserChanged } from "./js/auth.js";
+        import { api } from "./js/api.js";
 
-    <script type="module" src="./config.js"></script>
-    <script type="module" src="./js/app.js"></script>
+
+        window.api = api;
+
+        const loginBtn = document.getElementById("loginBtn");
+        const logoutBtn = document.getElementById("logoutBtn");
+        const userInfo = document.getElementById("userInfo");
+        const createSection = document.getElementById("createSection");
+        const createForm = document.getElementById("createForm");
+        const openCreate = document.getElementById("OpenCreate");
+        const cancelCreate = document.getElementById("cancelCreate");
+        const eventsList = document.getElementById("eventsList");
+        const eventsLoading = document.getElementById("eventsLoading");
+
+        // ---- Login & Logout ----
+        loginBtn.addEventListener("click", async () => { await login(); });
+        logoutBtn.addEventListener("click", async () => { await logout(); });
+
+        // ---- Show/Hide create event form ----
+        openCreate.addEventListener("click", () => {
+            createSection.classList.remove("hidden");
+        });
+        cancelCreate.addEventListener("click", () => {
+            createSection.classList.add("hidden");
+        });
+
+        // ---- Handle auth state changes ----
+        onUserChanged(async (user, token) => {
+            if (user) {
+                loginBtn.style.display = "none";
+                logoutBtn.style.display = "inline-block";
+                userInfo.classList.remove("hidden");
+                userInfo.innerHTML = `<p>Logged in as ${user.email}</p>`;
+
+                // Fetch events once logged in
+                loadEvents();
+            } else {
+                loginBtn.style.display = "inline-block";
+                logoutBtn.style.display = "none";
+                userInfo.classList.add("hidden");
+                eventsList.innerHTML = "";
+            }
+        });
+
+        // ---- Load Events ----
+        async function loadEvents() {
+            eventsLoading.style.display = "block";
+            eventsList.innerHTML = "";
+            try {
+                const events = await api.listEvents();
+                eventsLoading.style.display = "none";
+
+                if (!events.length) {
+                    document.getElementById("eventsEmpty").classList.remove("hidden");
+                } else {
+                    document.getElementById("eventsEmpty").classList.add("hidden");
+                    events.forEach(ev => {
+                        const li = document.createElement("li");
+                        li.textContent = `${ev.title} (${ev.startTime})`;
+                        eventsList.appendChild(li);
+                    });
+                }
+            } catch (err) {
+                eventsLoading.textContent = "Failed to load events.";
+            }
+        }
+
+        // ---- Handle Create Event Form ----
+        createForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const data = Object.fromEntries(new FormData(createForm));
+            try {
+                const newEvent = await api.createEvent(data);
+                console.log("Event created:", newEvent);
+                createForm.reset();
+                createSection.classList.add("hidden");
+                loadEvents(); // refresh
+            } catch (err) {
+                document.getElementById("createError").textContent = err.message;
+                document.getElementById("createError").style.display = "block";
+            }
+        });
+
+        api.me()
+            .then(user => console.log("Logged in as:", user))
+            .catch(err => console.error("Auth error:", err));
+
+
+
+    </script>
+
+
+
 </body>
 
 </html>

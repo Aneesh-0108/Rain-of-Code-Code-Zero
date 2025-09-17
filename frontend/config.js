@@ -1,5 +1,5 @@
 export const CONFIG = {
-    API_BASE: "http://localhost:5001",
+    API_BASE: "http://127.0.0.1:5001",
     firebase: {
         apiKey: "AIzaSyDCwuqE8LtTQa4AGsECWcbaYxAI0Jr-GKw",
         authDomain: "campus-connect-97792.firebaseapp.com",
