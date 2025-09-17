@@ -1,0 +1,12 @@
+{
+  "name": "rain-of-code-code-zero",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Campus Connect frontend and backend",
+  "main": "frontend/js/app.js",
+  "scripts": {
+    "start": "node frontend/js/app.js"
+  },
+  "author": "Aneesh-0108",
+  "license": "MIT"
+}
