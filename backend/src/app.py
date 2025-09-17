@@ -1,23 +1,10 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, Response
 from src.config import settings
 from src.errors import register_error_handlers, APIError
 from src.decorators import require_auth, require_role
 from src.services import events_service, registration_service
-from flask import Response
 from src.utils.ics import build_calendar
 from flask_cors import CORS
-
-
-
-app = Flask(__name__)
-
-# Allow only your local dev frontends
-CORS(app, origins=[
-    "http://localhost:5500",
-    "http://127.0.0.1:5500",
-    "http://localhost:8000"
-])
-
 
 
 COL_EVENTS = "events"
@@ -26,6 +13,13 @@ def create_app():
     app = Flask(__name__)
     app.config["SECRET_KEY"] = settings.SECRET_KEY
     register_error_handlers(app)
+
+    # CORS config for local frontend
+    CORS(app, resources={r"/api/*": {"origins": [
+        "http://localhost:5500",
+        "http://127.0.0.1:5500",
+        "http://localhost:8000"
+    ]}})
 
     @app.get("/health")
     def health():
@@ -54,7 +48,6 @@ def create_app():
     def cancel_registration(user, event_id):
         registration_service.cancel_registration(event_id, user["uid"])
         return jsonify({"status": "canceled"})
-    
 
     @app.post("/api/events/<event_id>/approve")
     @require_auth
@@ -62,7 +55,6 @@ def create_app():
     def approve_event(user, event_id):
         events_service.approve_event(event_id)
         return jsonify({"status": "approved"})
-
 
     @app.get("/api/me")
     @require_auth
@@ -73,28 +65,22 @@ def create_app():
             "roles": user.get("roles", [])
         })
 
-
-
     @app.get("/api/events.ics")
     def events_ics():
-        # We can only export approved events
+        # Export approved events only
         events = events_service.list_approved_events()
         data = build_calendar(events)
         return Response(data, mimetype="text/calendar; charset=utf-8")
 
     @app.get("/api/events/<event_id>.ics")
     def event_ics(event_id):
-        # fetch single event
-        # (Reuse existing retrieval)
+        # Fetch single event
         all_e = events_service.list_approved_events()
         match = next((e for e in all_e if e["id"] == event_id), None)
         if not match:
             return Response("Event not found", status=404)
-        from src.utils.ics import build_calendar
         data = build_calendar([match])
         return Response(data, mimetype="text/calendar; charset=utf-8")
-    
-
 
     @app.get("/debug/events")
     def debug_events():
@@ -102,6 +88,7 @@ def create_app():
         return jsonify([e["id"] for e in events])
 
     return app
+
 
 app = create_app()
 
