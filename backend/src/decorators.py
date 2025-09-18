@@ -1,26 +1,14 @@
 from functools import wraps
 from src.errors import APIError
 import firebase_admin
-from firebase_admin import auth, firestore, credentials
-import os
-
-# Build absolute path to serviceAccountKey.json
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-json_path = os.path.join(BASE_DIR, "serviceAccountKey.json")
-
-# Initialize Firebase Admin with service account
-if not firebase_admin._apps:
-    cred = credentials.Certificate(json_path)
-    firebase_admin.initialize_app(cred)
-
-db = firestore.client()
-
+from firebase_admin import auth
+from flask import request
+from src.auth_middleware import db  # ✅ reuse initialized db
 
 
 def require_auth(fn):
     @wraps(fn)
     def wrapper(*args, **kwargs):
-        from flask import request
         auth_header = request.headers.get("Authorization", "")
         if not auth_header.startswith("Bearer "):
             raise APIError("Authentication required", 401, "unauthorized")
@@ -55,3 +43,4 @@ def require_role(*roles):
             return fn(user, *args, **kwargs)
         return wrapper
     return decorator
+

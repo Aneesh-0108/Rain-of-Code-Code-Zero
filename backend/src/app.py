@@ -5,6 +5,10 @@ from src.decorators import require_auth, require_role
 from src.services import events_service, registration_service
 from src.utils.ics import build_calendar
 from flask_cors import CORS
+from src.auth_middleware import require_auth, require_role
+from functools import wraps
+
+import os
 
 
 COL_EVENTS = "events"
