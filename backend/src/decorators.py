@@ -3,7 +3,7 @@ from src.errors import APIError
 import firebase_admin
 from firebase_admin import auth
 from flask import request
-from src.auth_middleware import db  # ✅ reuse initialized db
+from .auth_middleware import db  # ✅ reuse initialized db
 
 
 def require_auth(fn):

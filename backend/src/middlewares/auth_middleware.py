@@ -1,11 +1,17 @@
+import os
 import firebase_admin
 from firebase_admin import auth, firestore, credentials
 from functools import wraps
 from flask import request, jsonify
 
 # Initialize Firebase app & Firestore
-cred = credentials.Certificate("serviceAccountKey.json")
-firebase_admin.initialize_app(cred)
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+json_path = os.path.join(BASE_DIR, "serviceAccountKey.json")
+
+if not firebase_admin._apps:
+    cred = credentials.Certificate(json_path)
+    firebase_admin.initialize_app(cred)
+
 db = firestore.client()
 
 def require_auth(fn):

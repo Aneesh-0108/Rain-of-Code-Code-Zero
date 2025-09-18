@@ -1,12 +1,13 @@
 from flask import Flask, jsonify, request, Response
-from src.config import settings
-from src.errors import register_error_handlers, APIError
-from src.decorators import require_auth, require_role
-from src.services import events_service, registration_service
-from src.utils.ics import build_calendar
 from flask_cors import CORS
-from src.auth_middleware import require_auth, require_role
 from functools import wraps
+
+# use relative imports since everything is inside src/
+from .config import settings
+from .errors import register_error_handlers, APIError
+from .decorators import require_auth, require_role
+from .services import events_service, registration_service
+from .utils.ics import build_calendar
 
 import os
 
