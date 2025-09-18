@@ -3,6 +3,9 @@ import { api } from "./api.js";
 import { refreshEvents } from "./events.js";
 import { toggleCreateForm, showUserInfo } from "./ui.js";
 import { isoFromLocalInput } from "./time.js";
+import { getAuth } from "firebase/auth";
+
+const auth = getAuth();
 
 const loginBtn = document.getElementById("loginBtn");
 const logoutBtn = document.getElementById("logoutBtn");
@@ -66,6 +69,13 @@ createForm.addEventListener("submit", async (e) => {
         createError.style.display = "block";
     }
 });
+
+if (auth.currentUser) {
+    auth.currentUser.getIdToken(true)
+        .then((token) => {
+            console.log("Your ID Token:", token);
+        });
+}
 
 // Provide global toast
 export function showToast(msg, error = false) {
